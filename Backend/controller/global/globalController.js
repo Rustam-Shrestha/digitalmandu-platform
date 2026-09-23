@@ -20,18 +20,10 @@ exports.getProducts = async (req, res) => {
     // We will be using another method for this just finding not populating
     const products = await Product.find();
 
-    // If products are not available give message of no products available
-    if (products.length === 0) {
-        return res.status(400).json({
-            message: "Products not found",
-            data: []
-        });
-    } else {
-        return res.status(200).json({
-            message: "Products fetched successfully",
-            data: products
-        });
-    }
+    return res.status(200).json({
+        message: products.length ? "Products fetched successfully" : "No products available",
+        data: products
+    });
 };
 
 exports.getEachProducts = async (req, res) => {

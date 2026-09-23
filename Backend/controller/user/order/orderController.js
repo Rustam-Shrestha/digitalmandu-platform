@@ -56,15 +56,8 @@ exports.getOrders = async (req, res) => {
         select: "-productStock -reviews",
     });
 
-    if (orders.length === 0) {
-        return res.status(404).json({
-            message: "No orders",
-            data: orders,
-        });
-    }
-
     return res.status(200).json({
-        message: "Orders fetched successfully",
+        message: orders.length ? "Orders fetched successfully" : "No orders yet",
         data: orders,
     });
 };

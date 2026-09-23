@@ -62,13 +62,11 @@ exports.getCartItems = async (req, res) => {
     }
 };
 
-// Removing element from cart
+// Removing element from cart (accepts productID or cartID subdoc _id)
 exports.removeCartItem = async (req, res) => {
     try {
-        // Retrieve user ID from token
         const userID = req.user.id;
-        // Get product ID from URL parameter
-        const productID = req.params.productID;
+        const productID = req.params.productID || req.params.cartID;
         // Get specific user
         const user = await User.findById(userID);
         
@@ -76,14 +74,12 @@ exports.removeCartItem = async (req, res) => {
             return res.status(200).json({ msg: "User not found, but no error" });
         }
         
-        // Check if the product exists in cart
-        const cartItemIndex = user.cart.findIndex((x) => x.product.toString() === productID);
+        // Match by product ObjectId OR subdoc _id (supports both frontend call styles)
+        const cartItemIndex = user.cart.findIndex((x) => x.product.toString() === productID || String(x._id) === productID);
         if (cartItemIndex === -1) {
-            return res.status(200).json({ msg: "Product not found in cart, but no error" });
+            return res.status(404).json({ msg: "Product not found in cart" });
         }
-        
-        // Remove the item from cart
-        user.cart = user.cart.filter((x) => x.product.toString() !== productID);
+        user.cart = user.cart.filter((x) => String(x._id) !== productID && x.product.toString() !== productID);
         await user.save();
         
         res.status(200).json({
