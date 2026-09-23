@@ -1,12 +1,9 @@
 const goose = require("mongoose");
 const adminSeeder = require("../adminSeeder");
 
-
 exports.connectDatabase = async (URI) => {
+    if (!URI) throw new Error("MONGO_URI is not defined. Check Backend/.env");
     await goose.connect(URI);
-    console.log("successfully connected");
-    // put admin right after the database is connected
-    adminSeeder();
+    console.log("successfully connected to MongoDB");
+    await adminSeeder();
 }
-
-// connection string: mongodb+srv://bdave5457:adminPassword@mandu-data.ac49f.mongodb.net/?retryWrites=true&w=majority&appName=mandu-data

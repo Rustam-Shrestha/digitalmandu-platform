@@ -16,11 +16,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("./uploads"))
 
 
-// Include .env to access environment variables
+// Include .env to access environment variables (must be before any process.env usage)
 require('dotenv').config();
 
-// Make database connection
-connectDatabase(process.env.Mongo_URI);
+// Make database connection - supports both MONGO_URI and legacy Mongo_URI
+const mongoUri = process.env.MONGO_URI || process.env.Mongo_URI;
+connectDatabase(mongoUri);
 
 
 const {Server} = require("socket.io")

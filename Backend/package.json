@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "seed": "node seed.js",
+    "seed:reset": "node seed.js --reset",
     "rustam": "nodemon app.js"
   },
   "keywords": [],
