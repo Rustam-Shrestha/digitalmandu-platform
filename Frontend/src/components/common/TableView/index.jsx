@@ -7,7 +7,7 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import { SearchIcon } from "../../../assets/data/icons";
 import { SkeletonTable } from "../SkletonLoader/index";
-import { ChevronDown } from "lucide-react";
+import { DownArrow } from "../../../assets/data/icons";
 
 const TableHeader = memo(({ columns, onFilterChange, hasExpandableRows, selectionColumn, headerChecked, headerIndeterminate, onToggleSelectAll }) => {
   const [showSearch, setShowSearch] = useState(null);
@@ -136,7 +136,7 @@ const TableRow = memo(({ row, rowIndex, columns, hasExpandableRows, isExpanded, 
                 onClick={() => onToggleExpand(row.id)}
                 className={`p-1 rounded hover:bg-gray-200 transition-all duration-200 ${isExpanded ? 'bg-primary/10' : ''}`}
               >
-                <ChevronDown 
+                <DownArrow
                   className={`w-4 h-4 text-primary transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
                 />
               </button>

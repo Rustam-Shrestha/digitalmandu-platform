@@ -41,11 +41,11 @@ const router = createBrowserRouter([
       {
         path: 'seller',
         children: [
-          { index: true, element: <Suspense fallback={<PageLoader />}><SellerDashboard /></Suspense> },
-          { path: 'products', element: <Suspense fallback={<PageLoader />}><SellerProducts /></Suspense> },
-          { path: 'products/create', element: <Suspense fallback={<PageLoader />}><SellerProductCreate /></Suspense> },
-          { path: 'orders', element: <Suspense fallback={<PageLoader />}><SellerOrders /></Suspense> },
-          { path: 'analytics', element: <Suspense fallback={<PageLoader />}><SellerAnalytics /></Suspense> },
+          { index: true, element: <Suspense fallback={<PageLoader />}><ProtectedRoute requiredRole="seller"><SellerDashboard /></ProtectedRoute></Suspense> },
+          { path: 'products', element: <Suspense fallback={<PageLoader />}><ProtectedRoute requiredRole="seller"><SellerProducts /></ProtectedRoute></Suspense> },
+          { path: 'products/create', element: <Suspense fallback={<PageLoader />}><ProtectedRoute requiredRole="seller"><SellerProductCreate /></ProtectedRoute></Suspense> },
+          { path: 'orders', element: <Suspense fallback={<PageLoader />}><ProtectedRoute requiredRole="seller"><SellerOrders /></ProtectedRoute></Suspense> },
+          { path: 'analytics', element: <Suspense fallback={<PageLoader />}><ProtectedRoute requiredRole="seller"><SellerAnalytics /></ProtectedRoute></Suspense> },
         ],
       },
       {

@@ -11,7 +11,7 @@ import React, { memo, useState, useMemo } from "react";
 import { SearchIcon } from "../../../assets/data/icons";
 import InputField from "../InputField";
 import { SkeletonTable } from "../SkletonLoader/index";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { DownArrow, UpArrow } from "../../../assets/data/icons";
 import CustomTableFooter from "../CustomTableFooter/index";
 
 // ─────────────────────────────────────────────────────────────
@@ -177,9 +177,9 @@ const TableRow = memo(
                   aria-label={isExpanded ? "Collapse row" : "Expand row"}
                 >
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 transition-transform" />
+                    <UpArrow className="w-4 h-4 transition-transform" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 transition-transform" />
+                    <DownArrow className="w-4 h-4 transition-transform" />
                   )}
                 </button>
               ) : (

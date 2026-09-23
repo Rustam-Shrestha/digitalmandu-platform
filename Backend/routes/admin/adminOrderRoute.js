@@ -5,11 +5,11 @@ const restrict = require("../../middlewares/restrict");
 const catchAsync = require("../../services/catchAsync");
 const rtr = require("express").Router();
 rtr.route("/getOrdersAsAnAdmin")
-    .get(catchAsync(isUserAuthenticated), catchAsync(restrict("admin")), catchAsync(getAllOrders))
+    .get(catchAsync(isUserAuthenticated), catchAsync(restrict("admin","seller")), catchAsync(getAllOrders))
 rtr.route("/ordersAsAnAdmin/:id")
-    .get(catchAsync(isUserAuthenticated), catchAsync(restrict("admin")), catchAsync(getSingleOrder))
-    .patch(catchAsync(isUserAuthenticated), catchAsync(restrict("admin")), catchAsync(updateOrderStatus))
-    .delete(catchAsync(isUserAuthenticated), catchAsync(restrict("admin")), catchAsync(deleteOrder))
+    .get(catchAsync(isUserAuthenticated), catchAsync(restrict("admin","seller")), catchAsync(getSingleOrder))
+    .patch(catchAsync(isUserAuthenticated), catchAsync(restrict("admin","seller")), catchAsync(updateOrderStatus))
+    .delete(catchAsync(isUserAuthenticated), catchAsync(restrict("admin","seller")), catchAsync(deleteOrder))
 
 
 module.exports = rtr

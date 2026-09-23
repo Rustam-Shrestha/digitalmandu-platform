@@ -21,14 +21,14 @@ getProducts
 // see next() in action in middleware folder inside the file for isauthenticated.js
 // the third paratmetr is for those who is admin and they can upload a single fiel only
 // productImage alias providd must be followed when taking the image from user otehrwise eror 
-rtr.route('/add_product').post(catchAsync(isUserAuthenticated), catchAsync(restrict("admin")),catchAsync(upload.single('productImage')),catchAsync(createProduct))
+rtr.route('/add_product').post(catchAsync(isUserAuthenticated), catchAsync(restrict("admin","seller")),catchAsync(upload.single('productImage')),catchAsync(createProduct))
 //for all products
 rtr.route('/products').get(catchAsync(getProducts))
 // for each product
-rtr.route('/products/:id').get(catchAsync(getEachProducts)).delete(catchAsync(isUserAuthenticated),restrict("admin"),catchAsync(upload.single('productImage')),catchAsync(deleteProduct))
+rtr.route('/products/:id').get(catchAsync(getEachProducts)).delete(catchAsync(isUserAuthenticated),restrict("admin","seller"),catchAsync(upload.single('productImage')),catchAsync(deleteProduct))
 // the upload.single method must be used otherwist the node will nnot handle form data anf file module b\
 // the only reason multer is used 
-.patch(catchAsync(isUserAuthenticated), catchAsync(restrict("admin")), upload.single('productImage'), catchAsync(updateProduct));
+.patch(catchAsync(isUserAuthenticated), catchAsync(restrict("admin","seller")), upload.single('productImage'), catchAsync(updateProduct));
 
 // deleting the rpoduct with an id
 // rtr.route('/products/:id').get(catchAsync(getEachProducts))

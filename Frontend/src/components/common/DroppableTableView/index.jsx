@@ -39,65 +39,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-// ── icons (project-aligned) ─────────────────────────────────────
-const ChevronDownIcon = ({ rotated }) => (
-    <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={`transition-transform duration-500 ease-in-out ${rotated ? "rotate-180" : ""}`}
-        aria-hidden
-    >
-        <path d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-    </svg>
-);
-
-const GripIcon = () => (
-    <svg
-        width="12"
-        height="12"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="shrink-0 text-gray-400 group-hover:text-primary transition-colors cursor-grab"
-        aria-hidden
-    >
-        <circle cx="8" cy="4" r="1.5" />
-        <circle cx="8" cy="12" r="1.5" />
-        <circle cx="8" cy="20" r="1.5" />
-        <circle cx="16" cy="4" r="1.5" />
-        <circle cx="16" cy="12" r="1.5" />
-        <circle cx="16" cy="20" r="1.5" />
-    </svg>
-);
-
-const SearchIcon = ({ onClick }) => (
-    <svg
-        width="13"
-        height="13"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="shrink-0 text-gray-400 hover:text-primary transition-colors cursor-pointer pointer-events-auto"
-        onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            onClick?.(e);
-        }}
-        aria-hidden
-    >
-        <circle cx="11" cy="11" r="8" />
-        <path d="m21 21-4.3-4.3" />
-    </svg>
-);
+import { DownArrow, SearchIcon, GripIcon } from "../../../assets/data/icons";
 
 
 
@@ -906,7 +848,7 @@ export default function DroppableTableView({
                                                                 className="ml-2 p-1.5 rounded-md transition-all duration-500 ease-in-out focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none shrink-0 self-center text-primary hover:bg-primary/10"
                                                                 type="button"
                                                             >
-                                                                <ChevronDownIcon rotated={isExpanded} />
+                                                                <DownArrow className={`size-5 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
                                                             </button>
                                                         </div>
                                                     );

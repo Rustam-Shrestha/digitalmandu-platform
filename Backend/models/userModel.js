@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     phone: { type: String, required: [true, "number is required"]},
     password: { type: String, required: [true, "password is required"]},
     email: { type: String, required: [true, "email is required"], unique:true, lowercase:true},
-    role: { type: String, enum: ['customer', 'admin'], required: [true, "role is required"], default: "customer"},
+    role: { type: String, enum: ['customer', 'admin', 'seller'], required: [true, "role is required"], default: "customer"},
     otp: { type: Number},
     isOtpVerified: { type: Boolean, default:false},
     // appending the cart functionality with product reference

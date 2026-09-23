@@ -907,6 +907,43 @@ const CopyIcon = ({ onClick, className }) => (
   </svg>
 );
 
+const MenuIcon = ({ className = "size-6" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+  </svg>
+);
+
+const GripIcon = ({ className = "shrink-0 text-gray-400 group-hover:text-primary" }) => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+    <circle cx="8" cy="4" r="1.5" /><circle cx="8" cy="12" r="1.5" /><circle cx="8" cy="20" r="1.5" />
+    <circle cx="16" cy="4" r="1.5" /><circle cx="16" cy="12" r="1.5" /><circle cx="16" cy="20" r="1.5" />
+  </svg>
+);
+
+const HomeIcon = ({ className = "size-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+  </svg>
+);
+
+const BasketIcon = ({ className = "size-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75a3 3 0 0 0-3-3M3.75 6h16.5l-1.5 7.5a2.25 2.25 0 0 1-2.25 1.875H6.75A2.25 2.25 0 0 1 4.5 13.5L3.75 6Z" />
+  </svg>
+);
+
+const ChartBarIcon = ({ className = "size-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+  </svg>
+);
+
+const CrownIcon = ({ className = "size-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m12-2.513c0-1.135-.845-2.098-1.976-2.192A48.424 48.424 0 0 0 12 8.25c-1.355 0-2.697.055-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m12-2.513v2.513c0 1.135-.845 2.098-1.976 2.192A48.424 48.424 0 0 1 12 15.75c-1.355 0-2.697-.055-4.024-.166C6.845 15.49 6 14.527 6 13.392V10.88m12 0a2.25 2.25 0 0 1 2.25 2.25v6.75a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25v-6.75A2.25 2.25 0 0 1 6 10.88h12Z" />
+  </svg>
+);
+
 export {
   BulletListIcon,
   CalenderIcon,
@@ -956,4 +993,10 @@ export {
   UploadArrow,
   UserIcon,
   ProfileIcon,
+  MenuIcon,
+  GripIcon,
+  HomeIcon,
+  BasketIcon,
+  ChartBarIcon,
+  CrownIcon,
 };

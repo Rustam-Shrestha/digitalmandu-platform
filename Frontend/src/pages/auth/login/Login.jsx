@@ -18,9 +18,11 @@ const Login = () => {
   const handleOnSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(userData);
+      const res = await login(userData);
+      const role = res?._resolvedUser?.role || res?.data?.role;
       toast.success("Login successful");
-      navigate("/");
+      if (role === 'admin' || role === 'seller') navigate("/seller");
+      else navigate("/");
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     }

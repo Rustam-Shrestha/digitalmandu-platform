@@ -1,5 +1,20 @@
 import { create } from 'zustand';
 import { authAPI } from '../api/endpoints/auth';
+import { useUIStore } from './uiStore';
+
+function mapRoleToUI(role) {
+  if (role === 'admin' || role === 'seller') return 'seller';
+  if (role === 'customer') return 'buyer';
+  return role || 'buyer';
+}
+
+function syncRoleFromUser(user) {
+  const role = user?.role ? mapRoleToUI(user.role) : null;
+  if (role) {
+    localStorage.setItem('userRole', role);
+    useUIStore.setState({ userRole: role });
+  }
+}
 
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('user') || 'null'),
@@ -14,9 +29,11 @@ export const useAuthStore = create((set) => ({
       const token = data.token || data.data;
       localStorage.setItem('token', token);
       localStorage.setItem('authToken', token);
-      if (data.data?.user) localStorage.setItem('user', JSON.stringify(data.data.user));
-      set({ user: data.data?.user || data.user || null, token, isAuthenticated: true, loading: false });
-      return data;
+      const userObj = data.data && typeof data.data === 'object' && !Array.isArray(data.data) && data.data.email ? data.data : (data.data?.user || data.user || null);
+      if (userObj) localStorage.setItem('user', JSON.stringify(userObj));
+      syncRoleFromUser(userObj);
+      set({ user: userObj, token, isAuthenticated: true, loading: false });
+      return { ...data, _resolvedUser: userObj };
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed';
       set({ error: msg, loading: false });
@@ -38,7 +55,8 @@ export const useAuthStore = create((set) => ({
     }
   },
   logout: async () => {
-    localStorage.removeItem('token'); localStorage.removeItem('authToken'); localStorage.removeItem('user');
+    localStorage.removeItem('token'); localStorage.removeItem('authToken'); localStorage.removeItem('user'); localStorage.removeItem('userRole');
+    useUIStore.setState({ userRole: 'buyer' });
     set({ user: null, token: null, isAuthenticated: false });
   },
   setUser: (user) => { localStorage.setItem('user', JSON.stringify(user)); set({ user }); },

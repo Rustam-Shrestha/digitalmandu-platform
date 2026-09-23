@@ -1,5 +1,6 @@
 const Product = require("../../../models/productModel");
 const fs = require("fs");
+const path = require("path");
 // Include .env to access environment variables
 require('dotenv').config();
 
@@ -12,17 +13,22 @@ exports.createProduct = ((req, res) => {
         if (!req.file) {
             filepath = "https://artists.spotify.com/songwriter/3IMp1zKhmOEmva4eNPGZKf"
         } else {
-            // if file exists then give filename as filepath
-            filepath = process.env.BACKEND_URL + "" + req.file.filename
+            const base = (process.env.BACKEND_URL || 'http://localhost:3000/').replace(/\/?$/, '/')
+            filepath = base + req.file.filename
         }
         console.log(file)
         console.log(req.user);
         // return;
-        const { userProductName, userProductPrice, userProductDescription, userProductStatus, userProductStock } = req.body;
+        // support both legacy userProduct* and new product* keys from frontend FormData
+        const userProductName = req.body.userProductName || req.body.productName;
+        const userProductPrice = req.body.userProductPrice || req.body.productPrice;
+        const userProductDescription = req.body.userProductDescription || req.body.productDescription;
+        const userProductStatus = req.body.userProductStatus || req.body.productStatus;
+        const userProductStock = req.body.userProductStock || req.body.productStock;
         // if any of the above information is not provided give 400 status error
         if (!userProductName || !userProductPrice || !userProductDescription || !userProductStatus || !userProductStock) {
             // send 400 status with required product field not filled 
-            res.status(400).json({
+            return res.status(400).json({
                 message: "given product field must be filled compulsarily"
             })
         }
@@ -68,17 +74,22 @@ exports.deleteProduct = async (req, res) => {
         })
     }
 
-    const oldProductImage = oldData.productImage // http://localhost:3000/1698943267271-bunImage.png"
-    const lengthToCut = process.env.BACKEND_URL.length
-    const finalFilePathAfterCut = oldProductImage.slice(lengthToCut)
+    const oldProductImage = oldData.productImage || "" // http://localhost:3000/1698943267271-bunImage.png"
+    if (oldProductImage.includes("spotify.com") || !oldProductImage.startsWith("http")) {
+        // nothing to delete on disk
+    } else {
+    const baseLen = (process.env.BACKEND_URL || 'http://localhost:3000/').length
+    const finalFilePathAfterCut = oldProductImage.slice(baseLen).replace(/^\//,'')
     // REMOVE FILE FROM UPLOADS FOLDER
-    fs.unlink("./uploads/" + finalFilePathAfterCut, (err) => {
+    const absPath = path.join(__dirname, "..", "..", "..", "uploads", finalFilePathAfterCut)
+    fs.unlink(absPath, (err) => {
         if (err) {
             console.log("error deleting file", err)
         } else {
             console.log("file deleted successfully")
         }
     })
+    }
     await Product.findByIdAndDelete(id)
     res.status(200).json({
 
