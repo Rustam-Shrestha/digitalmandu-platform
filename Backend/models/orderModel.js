@@ -33,7 +33,8 @@ const orderSchema = new Schema({
             },
             method: {
                 type: String,
-                enum: ['COD', "khalti"]
+                enum: ['COD', 'cod', "khalti"],
+                lowercase: true
             },
             status: {
                 type: String,

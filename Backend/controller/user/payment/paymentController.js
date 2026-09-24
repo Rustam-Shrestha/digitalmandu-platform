@@ -1,5 +1,6 @@
 const { default: axios } = require("axios");
 const Order = require("../../../models/orderModel");
+const User = require("../../../models/userModel");
 
 exports.initateKhaltiPayment = async (req, res) => {
     const { orderId, amount } = req.body;
@@ -11,22 +12,26 @@ exports.initateKhaltiPayment = async (req, res) => {
     if (!order) {
         return res.status(404).json({ message: "Order not found." });
     }
-    //check whether coming order is total amount of order
-    if (order.totalAmount !== amount) {
+    // allow paisa or rupees — normalize to number
+    const amountNum = Number(amount);
+    if (Number(order.totalAmount) !== amountNum && Number(order.totalAmount)*100 !== amountNum) {
         return res.status(400).json({ message: "Invalid amount." });
     }
 
+    const khaltiKey = process.env.KHALTI_SECRET_KEY || "370da36237d94394a497c6d83e634229";
+    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+    const backendUrl = (process.env.BACKEND_URL || "http://localhost:3000/").replace(/\/$/, "/");
     const data = {
-        return_url: "http://localhost:5173/success",
-        purchase_order_id: orderId,
-        amount: amount, // Convert NPR to paisa
-        website_url: "http://localhost:3000/",
+        return_url: `${frontendUrl}/khalti-success`,
+        purchase_order_id: String(orderId),
+        amount: amountNum < 1000 ? amountNum * 100 : amountNum, // NPR -> paisa if not already
+        website_url: backendUrl,
         purchase_order_name: "order_name_" + orderId
     };
 
     const response = await axios.post("https://dev.khalti.com/api/v2/epayment/initiate/", data, {
         headers: {
-            "Authorization": "key 370da36237d94394a497c6d83e634229",
+            "Authorization": `key ${khaltiKey}`,
             "Content-Type": "application/json"
         }
     });
@@ -55,79 +60,42 @@ exports.initateKhaltiPayment = async (req, res) => {
 };
 
 // verifying transaction id pids
-//verifying payment is done or not 
 exports.verifyPidx = async (req, res) => {
-    const app = require("../../../app")
-    const io = app.getSocketIo;
-    //pidx comes from qyery not params as it is followed as ?pidx=xxx
-    // const pidx = req.query.pidx;
-    const pidx = req.body.pidx;
-    const userId = req.user.id
+    try {
+    const pidx = req.body.pidx || req.query.pidx;
+    const userId = req.user?.id
 
     if (!pidx) {
         return res.status(400).json({ message: "Pidx is required." });
     }
-    //using axios request to lookup at the payment status that will show 
-    //trabsatction id payment amount and status of payment
+    const khaltiKey = process.env.KHALTI_SECRET_KEY || "370da36237d94394a497c6d83e634229";
     const response = await axios.post("https://dev.khalti.com/api/v2/epayment/lookup/", { pidx: pidx }, {
-        //headers should be also given to authorize the token if we are initializing the right request or not 
-        //otherwise we will be unauthorixed
         headers: {
-            "Authorization": "key 370da36237d94394a497c6d83e634229",
+            "Authorization": `key ${khaltiKey}`,
             "Content-Type": "application/json"
         }
-    }
-    );
-    console.log(response.data.pidx)
-    res.send(response.data)
+    });
+    console.log("khalti lookup", response.data)
     if (response.data.status == "Completed") {
-        //modify database   
-        let order = await Order.find({ "paymentDetails.pidx": pidx })
-        console.log(order)
-        order[0].paymentDetails.metnod = "khalti"
-        order[0].paymentDetails.status = "paid"
-        await order[0].save()
-        //emptying user cart
-        let user = User.findById(userId)
-        //if user is not present then throw err
-        if (!user) {
-            return res.status(404).json({ message: "User not found." });
+        let orders = await Order.find({ "paymentDetails.pidx": pidx })
+        if (orders && orders[0]) {
+          if (!orders[0].paymentDetails) orders[0].paymentDetails = {};
+          orders[0].paymentDetails.method = "khalti"
+          orders[0].paymentDetails.status = "paid"
+          orders[0].orderStatus = "confirmed"
+          await orders[0].save()
         }
-        user.cart = []
-        await user.save()
-        res.status(200).json({
-            message: "payment verified successfully "
-        })
-        //non socket approach
-
-
-
-
-
-        //notify the user that payment is done
-        // res.redirect("http://localhost:3000")
-
-        //get socket id of requesting usere
-        // io.on("connection", () => {
-        //     io.to(socket.id).emit("payment", { message: "payment successful", order })
-        // })
-
-
-        //using socket for notifying 
-        // io.emit("payment", { message: "payment successful", order })
+        if (userId) {
+          let user = await User.findById(userId)
+          if (user) { user.cart = []; await user.save(); }
+        }
+        return res.status(200).json({ message: "payment verified successfully", data: response.data })
     } else {
-        //notify the user that payment is not done
-        // io.on("connection", () => {
-        io.to(socket.id).emit("payment", { message: "payment failure", order })
-        // })
-        //using socket for notifying
-
-
-
-        //using socket for notifying 
-        // io.emit("payment", { message: "payment failure", order })
-        // io.emit("payment_failure", { message: "payment failure" })
-        // res.redirect("http://localhost:3000/failurePage")
+        return res.status(200).json({ message: "payment pending", data: response.data })
+    }
+    } catch (e) {
+        console.error("verifyPidx error", e.response?.data || e.message);
+        return res.status(500).json({ message: "Verification failed", error: e.response?.data || e.message })
     }
 }
 

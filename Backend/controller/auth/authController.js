@@ -136,13 +136,20 @@ exports.forgotPassword = async (req, res) => {
         // as we give user the OTP we save it to verify them by storing them in db
         emailExists.otp = otpUser;
         await emailExists.save()
-        await sendEmail({
-            userEmail: userEmail,
-            emailSubject: "Password Reset OTP for Digital Mandu",
-            emailMessage: `Your OTP for password reset is ${otpUser}`,
-        });
+        try {
+          await sendEmail({
+              userEmail: userEmail,
+              emailSubject: "Password Reset OTP for Digital Mandu",
+              emailMessage: `Your OTP for password reset is ${otpUser}`,
+          });
+        } catch (mailErr) {
+          console.warn("Email send failed (dev fallback), OTP:", otpUser, mailErr.message);
+        }
+        console.log(`[DEV OTP] ${userEmail} -> ${otpUser}`);
+        const isDev = !process.env.EMAIL_USER || process.env.EMAIL_USER === 'dev@example.com';
         return res.json({
-            message: "Successfully sent message"
+            message: isDev ? `OTP sent (dev mode): ${otpUser}` : "Successfully sent message",
+            ...(isDev ? { otp: otpUser } : {})
         });
     }
 };

@@ -23,7 +23,7 @@ exports.createProduct = ((req, res) => {
         const userProductName = req.body.userProductName || req.body.productName;
         const userProductPrice = req.body.userProductPrice || req.body.productPrice;
         const userProductDescription = req.body.userProductDescription || req.body.productDescription;
-        const userProductStatus = req.body.userProductStatus || req.body.productStatus;
+        const userProductStatus = req.body.userProductStatus || req.body.productStatus || 'public';
         const userProductStock = req.body.userProductStock || req.body.productStock;
         // if any of the above information is not provided give 400 status error
         if (!userProductName || !userProductPrice || !userProductDescription || !userProductStatus || !userProductStock) {

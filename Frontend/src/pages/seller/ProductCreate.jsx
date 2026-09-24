@@ -8,7 +8,7 @@ import { CloudArrow } from '../../assets/data/icons';
 export default function SellerProductCreate() {
   const navigate = useNavigate();
   const { mutateAsync, isPending } = useCreateProduct();
-  const [form, setForm] = useState({ productName:'', productDescription:'', productPrice:'', productStock:'', productStatus:'draft' });
+  const [form, setForm] = useState({ productName:'', productDescription:'', productPrice:'', productStock:'', productStatus:'public' });
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
 

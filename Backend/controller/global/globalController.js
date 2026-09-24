@@ -17,12 +17,17 @@ exports.getProducts = async (req, res) => {
 
     // });
 
-    // We will be using another method for this just finding not populating
-    const products = await Product.find();
+    // Public listing: only products with status public and valid image
+    const filter = { productStatus: 'public' };
+    // allow ?all=true for admin/seller debugging (optional)
+    if (req.query.all === 'true') delete filter.productStatus;
+    const products = await Product.find(filter).sort({ createdAt: -1 });
+    // filter out placeholder spotify image at response level (legacy data)
+    const cleaned = products.filter(p => !String(p.productImage||'').includes('spotify.com'));
 
     return res.status(200).json({
-        message: products.length ? "Products fetched successfully" : "No products available",
-        data: products
+        message: cleaned.length ? "Products fetched successfully" : "No products available",
+        data: cleaned
     });
 };
 
