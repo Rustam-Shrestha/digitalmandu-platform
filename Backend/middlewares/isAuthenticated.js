@@ -34,8 +34,10 @@ const isUserAuthenticated = async (req, res, next) => {
             return res.status(401).json({ message: "You are not authorized to access this route" });
         }
 
-        // Attach the user to the request object
+        // Attach the user to the request object + convenience aliases for new routes
         req.user = authorizedUser;
+        req.userId = authorizedUser._id;
+        req.userRole = authorizedUser.role;
         next();
     } catch (error) {
         // Handle errors

@@ -1,6 +1,7 @@
 
 const Order = require("../../../models/orderModel");
 const User = require("../../../models/userModel");
+const Product = require("../../../models/productModel");
 
 // Create a new order
 exports.createOrder = async (req, res) => {
@@ -17,9 +18,22 @@ exports.createOrder = async (req, res) => {
             return res.status(400).json({ message: "Invalid items data. Each item must have a product ID." });
         }
 
+        // deduct stock + soldCount atomically, derive seller from first product
+        let seller = null;
+        for (let item of items) {
+            const prod = await Product.findById(item.product);
+            if (!prod) return res.status(400).json({ message: `Product ${item.product} not found` });
+            if (prod.productStock < item.quantity) return res.status(400).json({ message: `Insufficient stock for ${prod.productName}` });
+            if (!seller && prod.seller) seller = prod.seller;
+        }
+        for (let item of items) {
+            await Product.findByIdAndUpdate(item.product, { $inc: { productStock: -item.quantity, soldCount: item.quantity } });
+        }
+
         // Populate the orders collection
         const order = await Order.create({
             user: userId,
+            seller: seller || undefined,
             shippingAddress,
             items,
             totalAmount,

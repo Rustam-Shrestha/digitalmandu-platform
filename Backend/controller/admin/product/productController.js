@@ -39,8 +39,10 @@ exports.createProduct = ((req, res) => {
             productDescription: userProductDescription,
             productStatus: userProductStatus,
             productStock: userProductStock,
-            // setting image as filename
             productImage: filepath,
+            seller: req.user?._id || req.user?.id || undefined,
+            approvalStatus: 'approved',
+            approvedAt: new Date(),
         })
             .then((product) => {
                 res.status(201).json({

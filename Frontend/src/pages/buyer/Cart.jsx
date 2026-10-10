@@ -1,4 +1,4 @@
-import { useCart, useRemoveFromCart } from '../../api/hooks';
+import { useCart, useRemoveFromCart, useUpdateCartItem } from '../../api/hooks';
 import { PrimaryButton } from '../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
 import { SkeletonTableLoader } from '../../components/common/SkletonLoader';
@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 export default function Cart() {
   const { data, isLoading } = useCart();
   const { mutate: remove } = useRemoveFromCart();
+  const { mutate: updateQty } = useUpdateCartItem();
   const navigate = useNavigate();
   if (isLoading) return <SkeletonTableLoader />;
   const items = data?.data || data?.items || data?.cart || [];
@@ -35,10 +36,11 @@ export default function Cart() {
               <img src={getProductImage(prod, idx)} alt={getCartName(item)} onError={(e)=>handleImgError(e, idx)} className="w-20 h-20 rounded-lg object-cover border border-green-footer shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-900 truncate">{getCartName(item)}</p>
-                <p className="text-sm text-gray-500">Qty: {item.quantity || 1} · Rs {getCartPrice(item)}</p>
+                <p className="text-sm text-gray-500">Qty: {item.quantity || 1} · Rs {getCartPrice(item)} · {(() => { const s = getCartProduct(item)?.productStock ?? getCartProduct(item)?.stock; if(s==null) return ''; if(s===0) return 'Out of stock'; if(s<=5) return `${s} left in stock`; return `${s} in stock`; })()}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <img src={assets.add_icon_green} alt="add" className="h-6 w-6 cursor-pointer hover:scale-110 transition" onClick={()=>toast('Use product page to adjust quantity')} />
-                  <img src={assets.remove_icon_red} alt="remove" className="h-6 w-6 cursor-pointer hover:scale-110 transition" onClick={()=>remove(item._id || item.productId, { onSuccess: ()=>toast.success('Removed')})} />
+                  <button onClick={()=>{ const q=(item.quantity||1)+1; updateQty({ cartID: item._id, data:{quantity:q}}, { onSuccess:()=>toast.success('Quantity updated')}); }} className="hover:scale-110 transition"><img src={assets.add_icon_green} alt="+" className="h-6 w-6" /></button>
+                  <span className="text-sm font-semibold min-w-[1.5rem] text-center">{item.quantity||1}</span>
+                  <button onClick={()=>{ const q=(item.quantity||1)-1; if(q<=0) remove(item._id||item.productId, { onSuccess: ()=>toast.success('Removed')}); else updateQty({ cartID: item._id, data:{quantity:q}}, { onSuccess:()=>toast.success('Quantity updated')}); }} className="hover:scale-110 transition"><img src={assets.remove_icon_red} alt="-" className="h-6 w-6" /></button>
                 </div>
               </div>
               <button onClick={()=>remove(item._id || item.productId, { onSuccess: ()=>toast.success('Removed')})} className="self-start p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition" aria-label="Remove"><TrashIcon /></button>

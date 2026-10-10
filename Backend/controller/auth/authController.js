@@ -15,8 +15,8 @@ exports.registerUser = async (req, res) => {
     // Log received request body
     console.log("Received registration data:", req.body);
     
-    // Destructure the JSON form data
-    const { userEmail, userName, userPhone, userPassword } = req.body;
+    // Destructure the JSON form data (role optional, seller needs shopName later)
+    const { userEmail, userName, userPhone, userPassword, userRole } = req.body;
 
     // Check for empty fields
     if (!userEmail || !userPhone || !userName || !userPassword) {
@@ -36,12 +36,16 @@ exports.registerUser = async (req, res) => {
                 });
             }
 
+            const allowedRoles = ['customer', 'seller', 'admin'];
+            const role = allowedRoles.includes(userRole) ? userRole : 'customer';
             // Create a new user
             const data = await User.create({
                 email: userEmail,
                 name: userName,
                 phone: userPhone,
-                password: hx.hashSync(userPassword, 10) // Hash password
+                password: hx.hashSync(userPassword, 10), // Hash password
+                role,
+                ...(role === 'seller' ? { sellerProfile: { shopName: userName + "'s Shop" } } : {})
             });
 
             console.log("User created successfully:", data);

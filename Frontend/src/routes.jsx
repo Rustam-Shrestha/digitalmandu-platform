@@ -20,6 +20,7 @@ const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminUsers = lazy(() => import('./pages/admin/Users'));
 const AdminProducts = lazy(() => import('./pages/admin/Products'));
 const AdminOrders = lazy(() => import('./pages/admin/Orders'));
+const Chat = lazy(() => import('./pages/chat/Chat'));
 const KhaltiSuccess = lazy(() => import('./pages/payment/KhaltiSuccess'));
 const KhaltiFailed = lazy(() => import('./pages/payment/KhaltiFailed'));
 
@@ -57,6 +58,7 @@ const router = createBrowserRouter([
           { path: 'orders', element: <Suspense fallback={<PageLoader />}><AdminOrders /></Suspense> },
         ],
       },
+      { path: 'chat', element: <Suspense fallback={<PageLoader />}><ProtectedRoute><Chat /></ProtectedRoute></Suspense> },
       { path: 'payment/success', element: <Suspense fallback={<PageLoader />}><KhaltiSuccess /></Suspense> },
       { path: 'payment/failed', element: <Suspense fallback={<PageLoader />}><KhaltiFailed /></Suspense> },
     ],

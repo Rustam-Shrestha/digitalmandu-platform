@@ -155,8 +155,7 @@ exports.addProductReview = async (req, res) => {
         rating: userRating,
         message: userMessage,
     };
-    console.log ("review",review)    
-    console.log("powerfu",product)
+    if (!Array.isArray(product.reviews)) product.reviews = [];
     product.reviews.push(review);
     await product.save();
 

@@ -8,11 +8,23 @@ const productSchema = new mongoose.Schema({
     productDescription: { type: String, required: [true, "product description is required"] },
     productStock: { type: Number, required: [true, "product stock is required"] },
     productPrice: { type: Number, required: [true, "product price is required"] },
-    productStatus: { type: String, enum: ['draft', 'public'], required: [true, "draft is required"], default: "draft" },
+    productStatus: { type: String, enum: ['draft', 'public'], required: [true, "draft is required"], default: "public" },
     productImage: { type: String,required: [true, "image is required"], default: "drafthttps://artists.spotify.com/songwriter/3IMp1zKhmOEmva4eNPGZKf" },
-    // we may not use the follwoing code if we are not nesting the review on a product and using separate cvollection for reviews 
-    // this contsins aray of object which later is going to be populated by .push method while creating a reviwe
-    // reviews:[reviewSchema]
+    // SELLER ref - optional to keep seeded data intact (backfilled via migration)
+    seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    // APPROVAL - auto-approve by default (police later)
+    approvalStatus: { type: String, enum: ['draft', 'pending', 'approved', 'rejected'], default: 'approved' },
+    rejectionReason: String,
+    approvedBy: mongoose.Schema.Types.ObjectId,
+    approvedAt: Date,
+    soldCount: { type: Number, default: 0 },
+    viewCount: { type: Number, default: 0 },
+    avgRating: { type: Number, default: 0, min: 0, max: 5 },
+    reviewCount: { type: Number, default: 0 },
+    category: String,
+    tags: [String],
+    isActive: { type: Boolean, default: true },
+    reviews:[reviewSchema]
 },{
     // enabling mongodb to use new data called timespants
     timestamps:true,

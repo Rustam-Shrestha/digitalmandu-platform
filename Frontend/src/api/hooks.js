@@ -4,12 +4,18 @@ import { cartAPI } from './endpoints/cart';
 import { ordersAPI } from './endpoints/orders';
 import { paymentAPI } from './endpoints/payment';
 import { reviewsAPI } from './endpoints/reviews';
+import { addressesAPI } from './endpoints/addresses';
+import { chatAPI } from './endpoints/chat';
 import toast from 'react-hot-toast';
 
 export const useProducts = (params) => useQuery({ queryKey: ['products', params], queryFn: () => productsAPI.getList(params).then(r=>r.data), staleTime: 5*60*1000 });
 export const useProductDetail = (id, enabled=true) => useQuery({ queryKey: ['product', id], queryFn: () => productsAPI.getDetail(id).then(r=>r.data), enabled: !!id && enabled, staleTime: 10*60*1000 });
 export const useProductSearch = (query) => useQuery({ queryKey: ['products-search', query], queryFn: () => productsAPI.search(query).then(r=>r.data), enabled: !!query, staleTime: 3*60*1000 });
 export const useProductReviews = (productId) => useQuery({ queryKey: ['reviews', productId], queryFn: () => reviewsAPI.getByProduct(productId).then(r=>r.data), enabled: !!productId });
+export const useCreateReview = (productId) => {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: (data)=>reviewsAPI.create(productId, data), onSuccess: ()=>{qc.invalidateQueries({queryKey:['reviews', productId]}); qc.invalidateQueries({queryKey:['product', productId]}); toast.success('Review submitted');}, onError:(e)=>toast.error(e.response?.data?.message||'Failed to submit review')});
+};
 
 export const useCreateProduct = () => {
   const qc = useQueryClient();
@@ -58,3 +64,13 @@ export const useVerifyPayment = () => {
   const qc=useQueryClient();
   return useMutation({ mutationFn:(data)=>paymentAPI.verify(data), onSuccess:()=>{qc.invalidateQueries({queryKey:['orders']});toast.success('Payment verified');}, onError:(e)=>toast.error(e.response?.data?.message||'Verification failed')});
 };
+
+export const useAddresses = () => useQuery({ queryKey:['addresses'], queryFn:()=>addressesAPI.list().then(r=>r.data) });
+export const useCreateAddress = () => { const qc=useQueryClient(); return useMutation({ mutationFn:(d)=>addressesAPI.create(d), onSuccess:()=>{qc.invalidateQueries({queryKey:['addresses']}); toast.success('Address saved');}, onError:(e)=>toast.error(e.response?.data?.message||'Failed')}); };
+export const useUpdateAddress = () => { const qc=useQueryClient(); return useMutation({ mutationFn:({id,data})=>addressesAPI.update(id,data), onSuccess:()=>qc.invalidateQueries({queryKey:['addresses']})}); };
+export const useDeleteAddress = () => { const qc=useQueryClient(); return useMutation({ mutationFn:(id)=>addressesAPI.remove(id), onSuccess:()=>qc.invalidateQueries({queryKey:['addresses']})}); };
+export const useSetDefaultAddress = () => { const qc=useQueryClient(); return useMutation({ mutationFn:(id)=>addressesAPI.setDefault(id), onSuccess:()=>qc.invalidateQueries({queryKey:['addresses']})}); };
+
+export const useChats = () => useQuery({ queryKey:['chats'], queryFn:()=>chatAPI.getChats().then(r=>r.data), refetchInterval: 15000 });
+export const useChatMessages = (chatId) => useQuery({ queryKey:['chatMessages', chatId], queryFn:()=>chatAPI.getMessages(chatId).then(r=>r.data), enabled: !!chatId, refetchInterval: 5000 });
+export const useSendMessage = (chatId) => { const qc=useQueryClient(); return useMutation({ mutationFn:(d)=>chatAPI.sendMessage(chatId, d), onSuccess:()=>qc.invalidateQueries({queryKey:['chatMessages', chatId]})}); };

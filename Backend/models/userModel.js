@@ -9,6 +9,28 @@ const userSchema = new mongoose.Schema({
     role: { type: String, enum: ['customer', 'admin', 'seller'], required: [true, "role is required"], default: "customer"},
     otp: { type: Number},
     isOtpVerified: { type: Boolean, default:false},
+    // SELLER PROFILE - additive optional, auto-approve keeps sellers unblocked
+    sellerProfile: {
+        shopName: String,
+        shopDescription: String,
+        bankAccount: String,
+        totalSales: { type: Number, default: 0 },
+        rating: { type: Number, default: 0, min: 0, max: 5 },
+        isVerified: { type: Boolean, default: false },
+        verifiedAt: Date,
+        documents: {
+            panNumber: String,
+            bankProof: String
+        }
+    },
+    preferences: {
+        notifications: { type: Boolean, default: true },
+        newsletter: { type: Boolean, default: false },
+        language: { type: String, default: 'en' }
+    },
+    lastLogin: Date,
+    profilePicture: String,
+    bio: String,
     // appending the cart functionality with product reference
     // thsi will borrow instance of product collection withg stock being the number of product we will populate right after user adds product inside their cart 
     cart: [{ 

@@ -38,6 +38,9 @@ const user_review_route = require("./routes/user/userReviewRoute")
 const user_profile_route = require("./routes/user/profileRoute")
 const user_order_route = require("./routes/user/orderRoute")
 const user_payment_route = require("./routes/user/paymentRoute")
+const address_route = require("./routes/user/addressRoute")
+const seller_route = require("./routes/user/sellerRoute")
+const chat_route = require("./routes/chat/chatRoute")
 
 //step:5 create the requirement of the route path here
 const user_cart_route = require("./routes/user/cartRoute")
@@ -56,6 +59,9 @@ app.use("/api",user_review_route)
 app.use("/api",user_order_route)
 app.use("/api",admin_order_route)
 app.use("/api",user_payment_route)
+app.use("/api/addresses",address_route)
+app.use("/api/seller",seller_route)
+app.use("/api/chat",chat_route)
 
 // another way of using route either add everything on main route file like top
 //or explicitly mention path here like i did  tin this boottm part mentioning profile route explicitly

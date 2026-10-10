@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    // seller denormalized for quick seller order queries (optional additive)
+    seller: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     items: [{
         quantity: {
             type: Number,
@@ -25,6 +27,25 @@ const orderSchema = new Schema({
             type: String,
             enum: ["pending", "delivered", "cancelled", "ontheway", "preparation"],
             default: "pending"
+        },
+        trackingNumber: String,
+        estimatedDelivery: Date,
+        invoice: {
+            invoiceNumber: String,
+            invoiceDate: Date,
+            invoicePDF: String,
+            receipt: String
+        },
+        orderNotes: String,
+        customerNotes: String,
+        refund: {
+            requested: { type: Boolean, default: false },
+            reason: String,
+            status: { type: String, enum: ['none', 'requested', 'approved', 'rejected', 'completed'], default: 'none' },
+            amount: Number,
+            requestedAt: Date,
+            approvedAt: Date,
+            refundedAt: Date
         },
         paymentDetails: {
             //payment id if paid

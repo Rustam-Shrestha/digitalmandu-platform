@@ -43,15 +43,16 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product, idx) => (
             <div key={product._id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition group">
-              <div className="relative h-48 overflow-hidden bg-green-footer">
+                <div className="relative h-48 overflow-hidden bg-green-footer">
                 <img src={getProductImage(product, idx)} alt={product.productName || product.name} onError={(e)=>handleImgError(e, idx)} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                 <span className="absolute top-3 left-3 bg-white/90 text-primary text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1"><img src={assets.rating_starts} alt="" className="h-3" /> 4.5</span>
+                {product.productStock === 0 ? <span className="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">Out of stock</span> : product.productStock <= 5 ? <span className="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">{product.productStock} left</span> : null}
               </div>
               <div className="p-4">
                 <h3 className="font-semibold text-gray-900 truncate">{product.productName || product.name}</h3>
                 <p className="text-sm text-gray-500 line-clamp-2 h-10 mt-1">{product.productDescription || product.description}</p>
                 <div className="flex items-center justify-between mt-3">
-                  <p className="text-primary font-bold">Rs {product.productPrice || product.price}</p>
+                  <div><p className="text-primary font-bold">Rs {product.productPrice || product.price}</p><p className={`text-xs ${product.productStock===0?'text-red-600':product.productStock<=5?'text-amber-600':'text-gray-400'}`}>{product.productStock===0?'Out of stock':`${product.productStock} in stock`}</p></div>
                   <button onClick={()=>navigate(`/product/${product._id}`)} className="bg-primary text-white p-2 rounded-full hover:bg-green-700 transition" aria-label="View"><BasketIcon className="size-4" /></button>
                 </div>
               </div>

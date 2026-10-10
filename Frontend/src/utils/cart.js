@@ -1,5 +1,8 @@
 export function getCartProduct(item) {
-  return item?.product && typeof item.product === 'object' ? item.product : item;
+  const p = item?.product;
+  if (Array.isArray(p)) return p[0] || item;
+  if (p && typeof p === 'object') return p;
+  return item;
 }
 export function getCartPrice(item) {
   const p = getCartProduct(item);
@@ -11,6 +14,7 @@ export function getCartName(item) {
 }
 export function getCartProductId(item) {
   const p = item?.product;
+  if (Array.isArray(p) && p[0]?._id) return p[0]._id;
   if (p && typeof p === 'object' && p._id) return p._id;
   if (typeof p === 'string') return p;
   return item?.product ?? item?.productId ?? item?._id;

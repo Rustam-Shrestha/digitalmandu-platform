@@ -29,16 +29,20 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-yellow-50">
-      <div className="bg-white w-11/12 lg:w-5/12 md:w-6/12 shadow-xl p-8 rounded-lg">
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
-        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+    <div className="flex items-center justify-center py-8">
+      <div className="bg-white w-full max-w-md shadow-sm border border-green-border p-8 rounded-xl">
+        <h2 className="text-2xl font-bold font-serif text-center mb-1">Welcome Back</h2>
+        <p className="text-sm text-gray-500 text-center mb-6">Login to continue with DigitalMandu</p>
+        {error && <p className="text-red-600 text-sm mb-4 bg-red-50 border border-red-200 p-2 rounded">{error}</p>}
         <form onSubmit={handleOnSubmit} className="space-y-4">
-          <InputField label="Email" name="userEmail" type="text" value={userData.userEmail} onChange={handleChange} placeholder="Email" />
-          <InputField label="Password" name="userPassword" type="password" value={userData.userPassword} onChange={handleChange} placeholder="Password" />
+          <InputField label="Email" name="userEmail" type="text" value={userData.userEmail} onChange={handleChange} placeholder="you@example.com" />
+          <InputField label="Password" name="userPassword" type="password" value={userData.userPassword} onChange={handleChange} placeholder="••••••••" />
           <PrimaryButton label={loading ? "Loading..." : "Login"} type="submit" loading={loading} className="w-full justify-center" />
         </form>
-        <p className="text-center text-sm mt-4">No account? <Link to="/register" className="text-green-600">Register</Link></p>
+        <div className="flex justify-between text-sm mt-4">
+          <Link to="/forgot" className="text-primary hover:underline">Forgot password?</Link>
+          <Link to="/register" className="text-primary font-medium hover:underline">Create account</Link>
+        </div>
       </div>
     </div>
   );
