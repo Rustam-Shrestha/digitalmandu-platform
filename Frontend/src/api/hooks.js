@@ -71,6 +71,35 @@ export const useUpdateAddress = () => { const qc=useQueryClient(); return useMut
 export const useDeleteAddress = () => { const qc=useQueryClient(); return useMutation({ mutationFn:(id)=>addressesAPI.remove(id), onSuccess:()=>qc.invalidateQueries({queryKey:['addresses']})}); };
 export const useSetDefaultAddress = () => { const qc=useQueryClient(); return useMutation({ mutationFn:(id)=>addressesAPI.setDefault(id), onSuccess:()=>qc.invalidateQueries({queryKey:['addresses']})}); };
 
-export const useChats = () => useQuery({ queryKey:['chats'], queryFn:()=>chatAPI.getChats().then(r=>r.data), refetchInterval: 15000 });
-export const useChatMessages = (chatId) => useQuery({ queryKey:['chatMessages', chatId], queryFn:()=>chatAPI.getMessages(chatId).then(r=>r.data), enabled: !!chatId, refetchInterval: 5000 });
-export const useSendMessage = (chatId) => { const qc=useQueryClient(); return useMutation({ mutationFn:(d)=>chatAPI.sendMessage(chatId, d), onSuccess:()=>qc.invalidateQueries({queryKey:['chatMessages', chatId]})}); };
+export const useChats = () => useQuery({ queryKey:['chats'], queryFn:()=>chatAPI.getChats().then(r=>r.data?.data || r.data) });
+export const useChatContacts = () => useQuery({ queryKey:['chatContacts'], queryFn:()=>chatAPI.getContacts().then(r=>r.data?.data || r.data) });
+export const useChatMessages = (chatId) => useQuery({ queryKey:['chatMessages', chatId], queryFn:()=>chatAPI.getMessages(chatId).then(r=>r.data?.messages || r.data?.data?.messages || []), enabled: !!chatId });
+export const useGetOrCreateChat = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ targetUserId, orderId }) => chatAPI.getOrCreate(targetUserId, orderId).then(r => r.data?.data || r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['chats'] }),
+    onError: (e) => toast.error(e.response?.data?.message || 'Failed to initialize chat')
+  });
+};
+export const useSendMessage = (chatId) => { 
+  const qc = useQueryClient(); 
+  return useMutation({ 
+    mutationFn: (d) => chatAPI.sendMessage(chatId, d), 
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['chatMessages', chatId] });
+      qc.invalidateQueries({ queryKey: ['chats'] });
+    },
+    onError: (e) => toast.error(e.response?.data?.message || 'Failed to send message')
+  }); 
+};
+export const useMarkChatRead = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (chatId) => chatAPI.markRead(chatId),
+    onSuccess: (_, chatId) => {
+      qc.invalidateQueries({ queryKey: ['chats'] });
+      qc.invalidateQueries({ queryKey: ['chatMessages', chatId] });
+    }
+  });
+};

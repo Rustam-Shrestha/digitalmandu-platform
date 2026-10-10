@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { useOrders } from '../../api/hooks';
 import { SkeletonTableLoader } from '../../components/common/SkletonLoader';
-import { PackageIcon, LocationIcon } from '../../assets/data/icons';
+import { PackageIcon, LocationIcon, MessageIcon } from '../../assets/data/icons';
 
 export default function MyOrders() {
+  const navigate = useNavigate();
   const { data, isLoading, error } = useOrders();
   if (isLoading) return <SkeletonTableLoader />;
   if (error) return <p className="text-red-600">{error.message}</p>;
@@ -25,6 +27,21 @@ export default function MyOrders() {
               </p>
               <p className="text-sm text-gray-600 mt-1 flex items-center gap-1"><LocationIcon className="size-4 text-gray-400" /> Ship to: {o.shippingAddress || o.address?.street || '—'}</p>
               {o.items?.length ? <p className="text-xs text-gray-500 mt-2">{o.items.length} items: {o.items.map(it=> `${it.product?.productName||it.product?.name||it.product} x${it.quantity}`).join(', ')}</p> : null}
+              
+              <button 
+                onClick={() => {
+                  const targetId = o.items?.[0]?.product?.seller || o.items?.[0]?.product?.userId || o.seller;
+                  if (targetId) {
+                    const sId = typeof targetId === 'object' ? targetId._id : targetId;
+                    navigate(`/chat?userId=${sId}&orderId=${o._id}`);
+                  } else {
+                    navigate('/chat');
+                  }
+                }}
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-primary bg-green-50 hover:bg-green-100 border border-green-200 px-3 py-1.5 rounded-lg transition"
+              >
+                <MessageIcon className="size-3.5" /> Chat about order
+              </button>
             </div>
             <p className="font-bold text-primary text-lg shrink-0">Rs {o.totalAmount ?? o.totalPrice ?? 0}</p>
           </div>
@@ -33,3 +50,4 @@ export default function MyOrders() {
     </div>
   );
 }
+

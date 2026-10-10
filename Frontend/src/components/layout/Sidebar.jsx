@@ -1,11 +1,12 @@
 import { useUIStore } from '../../store/uiStore';
 import { Link, useLocation } from 'react-router-dom';
-import { HomeIcon, BasketIcon, PackageIcon, ProfileIcon, ChartBarIcon, CrownIcon, GroupUserIcon, DocumentIcon, BulletListIcon } from '../../assets/data/icons';
+import { HomeIcon, BasketIcon, PackageIcon, ProfileIcon, ChartBarIcon, CrownIcon, GroupUserIcon, DocumentIcon, BulletListIcon, MessageIcon } from '../../assets/data/icons';
 
 const BUYER_NAV = [
   { name: 'Home', path: '/', Icon: HomeIcon },
   { name: 'Cart', path: '/cart', Icon: BasketIcon },
   { name: 'Orders', path: '/orders', Icon: PackageIcon },
+  { name: 'Chat', path: '/chat', Icon: MessageIcon },
   { name: 'Profile', path: '/profile', Icon: ProfileIcon },
 ];
 const SELLER_NAV = [
@@ -13,13 +14,16 @@ const SELLER_NAV = [
   { name: 'Products', path: '/seller/products', Icon: PackageIcon },
   { name: 'Orders', path: '/seller/orders', Icon: BulletListIcon },
   { name: 'Analytics', path: '/seller/analytics', Icon: ChartBarIcon },
+  { name: 'Chat', path: '/chat', Icon: MessageIcon },
 ];
 const ADMIN_NAV = [
   { name: 'Dashboard', path: '/admin', Icon: CrownIcon },
   { name: 'Users', path: '/admin/users', Icon: GroupUserIcon },
   { name: 'Products', path: '/admin/products', Icon: PackageIcon },
   { name: 'Orders', path: '/admin/orders', Icon: DocumentIcon },
+  { name: 'Chat', path: '/chat', Icon: MessageIcon },
 ];
+
 
 export default function Sidebar() {
   const { userRole } = useUIStore();

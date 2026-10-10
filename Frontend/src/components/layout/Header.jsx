@@ -3,7 +3,7 @@ import { useUIStore } from '../../store/uiStore';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton, SecondaryButton } from '../common/Button';
 import { assets } from '../../assets/assets';
-import { BasketIcon, MenuIcon } from '../../assets/data/icons';
+import { BasketIcon, MenuIcon, MessageIcon } from '../../assets/data/icons';
 import { useCart } from '../../api/hooks';
 import UserMenu from './UserMenu';
 
@@ -24,10 +24,16 @@ export default function Header() {
           <h1 className="hidden sm:block text-xl font-bold text-primary font-serif cursor-pointer" onClick={()=>navigate('/')}>Vintage Bite</h1>
         </div>
         <div className="flex items-center gap-3">
+          {isAuthenticated && (
+            <button onClick={()=>navigate('/chat')} className="p-2 hover:bg-green-footer rounded-lg transition text-primary" aria-label="Messages" title="Chat Messages">
+              <MessageIcon className="size-6 text-primary" />
+            </button>
+          )}
           <button onClick={()=>navigate('/cart')} className="relative p-2 hover:bg-green-footer rounded-lg transition" aria-label="Cart">
             <BasketIcon className="size-6 text-primary" />
             {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-bold">{cartCount}</span>}
           </button>
+
 
           {isAuthenticated ? <UserMenu /> : (
             <>

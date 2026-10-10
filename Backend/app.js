@@ -88,15 +88,61 @@ const server = app.listen(PORT, () => {
 });
 
 // passing our server address to socket
-const io = new Server(server);
-
-io.on("connection", (socket) => {
-    console.log("connected to a socket");
-    // You can add more event listeners here
-    console.log(server)
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PATCH", "PUT", "DELETE"]
+    }
 });
 
-const getSocketIo = ()=>{
-    return io
-}
-module.exports.getSocketIo = getSocketIo
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
+io.on("connection", (socket) => {
+    console.log("Socket connected:", socket.id);
+
+    socket.on("join_room", (chatId) => {
+        if (chatId) {
+            socket.join(`chat_${chatId}`);
+            console.log(`Socket ${socket.id} joined chat_${chatId}`);
+        }
+    });
+
+    socket.on("leave_room", (chatId) => {
+        if (chatId) {
+            socket.leave(`chat_${chatId}`);
+            console.log(`Socket ${socket.id} left chat_${chatId}`);
+        }
+    });
+
+    socket.on("user_online", (userId) => {
+        if (userId) {
+            socket.join(`user_${userId}`);
+            console.log(`Socket ${socket.id} registered user_${userId}`);
+        }
+    });
+
+    socket.on("typing", ({ chatId, userName }) => {
+        if (chatId) {
+            socket.to(`chat_${chatId}`).emit("user_typing", { chatId, userName });
+        }
+    });
+
+    socket.on("stop_typing", ({ chatId }) => {
+        if (chatId) {
+            socket.to(`chat_${chatId}`).emit("user_stop_typing", { chatId });
+        }
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Socket disconnected:", socket.id);
+    });
+});
+
+const getSocketIo = () => {
+    return io;
+};
+
+module.exports.getSocketIo = getSocketIo;

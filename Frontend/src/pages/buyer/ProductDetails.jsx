@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useProductDetail, useAddToCart, useProductReviews, useCreateReview } from '../../api/hooks';
 import { SkeletonTableLoader } from '../../components/common/SkletonLoader';
 import { PrimaryButton } from '../../components/common/Button';
 import { assets } from '../../assets/assets';
 import { getProductImage, handleImgError } from '../../utils/productImage';
-import { BasketIcon, CommentIcon } from '../../assets/data/icons';
+import { BasketIcon, CommentIcon, MessageIcon } from '../../assets/data/icons';
 import toast from 'react-hot-toast';
+
 
 export default function ProductDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data, isLoading } = useProductDetail(id);
+
   const { data: reviews } = useProductReviews(id);
   const { mutate: addToCart, isPending } = useAddToCart();
   const { mutate: createReview, isPending: reviewPending } = useCreateReview(id);
@@ -31,10 +34,24 @@ export default function ProductDetails() {
         <p className="text-gray-600 mb-4 leading-relaxed">{product.productDescription || product.description}</p>
         <p className="text-primary font-bold text-2xl">Rs {product.productPrice || product.price}</p>
         <p className={`text-sm mb-6 ${product.productStock===0?'text-red-600 font-semibold':product.productStock<=5?'text-amber-600 font-semibold':'text-gray-500'}`}>{product.productStock===0?'Out of stock':product.productStock<=5?`Only ${product.productStock} left in stock — order soon`:`${product.productStock} in stock`}</p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3 mb-6">
           <PrimaryButton label={product.productStock===0?'Out of stock':isPending ? 'Adding...' : 'Add to Cart'} disabled={product.productStock===0} loading={isPending} onClick={()=>addToCart({ productID: id }, { onSuccess: ()=>toast.success('Added to cart'), onError: (e)=>toast.error(e.response?.data?.message || 'Failed') })} />
-          <span className="inline-flex items-center gap-2 text-sm text-gray-600 border border-green-border rounded-lg px-4 bg-green-footer"><BasketIcon className="size-4 text-primary" /> Free delivery</span>
+          
+          {(product.seller || product.userId) && (
+            <button 
+              onClick={() => {
+                const sId = typeof product.seller === 'object' ? product.seller._id : (product.seller || product.userId);
+                navigate(`/chat?userId=${sId}`);
+              }}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary border border-primary/30 hover:border-primary rounded-xl px-4 py-2.5 bg-green-50/50 hover:bg-green-100/50 transition shadow-xs"
+            >
+              <MessageIcon className="size-4 text-primary" /> Chat with Seller
+            </button>
+          )}
+
+          <span className="inline-flex items-center gap-2 text-sm text-gray-600 border border-green-border rounded-xl px-4 py-2.5 bg-green-footer"><BasketIcon className="size-4 text-primary" /> Free delivery</span>
         </div>
+
         <div className="mt-8 border-t border-gray-200 pt-6">
           <h3 className="font-semibold font-serif mb-3 flex items-center gap-2"><CommentIcon /> Reviews</h3>
           <div className="bg-gray-50 border border-green-border rounded-xl p-4 mb-4">
